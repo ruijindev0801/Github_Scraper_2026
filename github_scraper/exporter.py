@@ -159,13 +159,22 @@ def _build_export_rows(
     return rows
 
 
+def _normalize_csv_header_name(name: str) -> str:
+    return name.strip().lower().lstrip("\ufeff")
+
+
 def _load_existing_usernames(file_path: Path) -> set[str]:
     if not file_path.exists():
         return set()
 
     with file_path.open("r", newline="", encoding="utf-8") as file_obj:
         reader = csv.DictReader(file_obj)
-        return {row["username"] for row in reader if row.get("username")}
+        usernames = set()
+        for row in reader:
+            username = row.get("username")
+            if username:
+                usernames.add(username.strip())
+        return usernames
 
 
 def _upgrade_existing_csv_schema(file_path: Path) -> None:
@@ -179,10 +188,11 @@ def _upgrade_existing_csv_schema(file_path: Path) -> None:
         return
 
     current_header = rows[0]
-    if current_header == CSV_HEADERS:
+    normalized_headers = [_normalize_csv_header_name(header) for header in current_header]
+    if normalized_headers == [name.lower() for name in CSV_HEADERS]:
         return
 
-    header_index = {name: index for index, name in enumerate(current_header)}
+    header_index = {name: index for index, name in enumerate(normalized_headers)}
     if "username" not in header_index:
         return
 
