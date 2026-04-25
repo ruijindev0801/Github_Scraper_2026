@@ -19,9 +19,9 @@ from github_scraper.scraper import scrape_users
 
 
 RESULT_CSV_PATH = Path(__file__).resolve().parent.parent / "result.csv"
-SIDE_PANEL_WIDTH = 360
-WINDOW_WIDTH = 1180
-WINDOW_HEIGHT = 950
+SIDE_PANEL_WIDTH = 300
+WINDOW_WIDTH = 960
+WINDOW_HEIGHT = 720
 
 
 class GitHubScraperApp:
@@ -32,7 +32,7 @@ class GitHubScraperApp:
         self.root = ctk.CTk()
         self.root.title("GitHub Talent Scraper")
         self.root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
-        self.root.minsize(1080, 930)
+        self.root.minsize(900, 680)
         self.root.configure(fg_color="#eef3f8")
 
         self._create_variables()
@@ -53,6 +53,7 @@ class GitHubScraperApp:
         self.min_followers_var = tk.StringVar()
         self.max_followers_var = tk.StringVar()
         self.contact_mode_var = tk.StringVar(value="both")
+        self.gender_var = tk.StringVar(value="male")
         self.destination_var = tk.StringVar(value=DESTINATION_LOCAL)
         self.local_result_var = tk.StringVar(value=str(RESULT_CSV_PATH))
         self.google_sheet_var = tk.StringVar()
@@ -82,11 +83,11 @@ class GitHubScraperApp:
         shell = ctk.CTkFrame(
             self.root,
             fg_color="#ffffff",
-            corner_radius=24,
+            corner_radius=18,
             border_width=1,
             border_color="#dde6f0",
         )
-        shell.pack(fill="both", expand=True, padx=18, pady=18)
+        shell.pack(fill="both", expand=True, padx=12, pady=12)
         shell.grid_columnconfigure(0, weight=1)
         shell.grid_columnconfigure(1, minsize=SIDE_PANEL_WIDTH)
         shell.grid_rowconfigure(1, weight=1)
@@ -97,13 +98,13 @@ class GitHubScraperApp:
 
     def _build_topbar(self, parent: ctk.CTkFrame) -> None:
         topbar = ctk.CTkFrame(parent, fg_color="transparent")
-        topbar.grid(row=0, column=0, columnspan=2, sticky="ew", padx=24, pady=(24, 18))
+        topbar.grid(row=0, column=0, columnspan=2, sticky="ew", padx=16, pady=(16, 12))
         topbar.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(
             topbar,
             text="GitHub Talent Scraper",
-            font=ctk.CTkFont(size=26, weight="bold"),
+            font=ctk.CTkFont(size=22, weight="bold"),
             text_color="#1b2b3d",
         ).grid(row=0, column=0, sticky="w")
 
@@ -119,34 +120,34 @@ class GitHubScraperApp:
             card = ctk.CTkFrame(
                 stats,
                 fg_color="#f4f8fc",
-                corner_radius=18,
+                corner_radius=14,
                 border_width=1,
                 border_color="#dce5ef",
             )
-            card.grid(row=0, column=index, padx=(12 if index else 0, 0), sticky="e")
+            card.grid(row=0, column=index, padx=(8 if index else 0, 0), sticky="e")
             ctk.CTkLabel(
                 card,
                 text=value,
-                font=ctk.CTkFont(size=16, weight="bold"),
+                font=ctk.CTkFont(size=14, weight="bold"),
                 text_color="#17324d",
-            ).pack(anchor="w", padx=16, pady=(12, 0))
+            ).pack(anchor="w", padx=12, pady=(8, 0))
             ctk.CTkLabel(
                 card,
                 text=label,
-                font=ctk.CTkFont(size=11),
+                font=ctk.CTkFont(size=10),
                 text_color="#71849a",
-            ).pack(anchor="w", padx=16, pady=(2, 12))
+            ).pack(anchor="w", padx=12, pady=(1, 8))
 
     def _build_form_panel(self, parent: ctk.CTkFrame) -> None:
         panel = ctk.CTkFrame(parent, fg_color="transparent")
-        panel.grid(row=1, column=0, sticky="nsew", padx=(24, 12), pady=(0, 24))
+        panel.grid(row=1, column=0, sticky="nsew", padx=(16, 8), pady=(0, 16))
         panel.grid_columnconfigure(0, weight=1)
         panel.grid_columnconfigure(1, weight=1)
 
         ctk.CTkLabel(
             panel,
             text="Search Filters",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=ctk.CTkFont(size=14, weight="bold"),
             text_color="#223548",
         ).grid(row=0, column=0, columnspan=2, sticky="w")
 
@@ -160,8 +161,9 @@ class GitHubScraperApp:
         self._build_field(panel, 4, 1, "Max Followers", self.max_followers_var, masked=False, required=False)
 
         self._build_contact_mode(panel, 5)
-        self._build_actions(panel, 6)
-        self._build_progress(panel, 7)
+        self._build_gender_filter(panel, 6)
+        self._build_actions(panel, 7)
+        self._build_progress(panel, 8)
 
     def _build_field(
         self,
@@ -178,8 +180,8 @@ class GitHubScraperApp:
             row=row,
             column=column,
             sticky="ew",
-            padx=(0, 10) if column == 0 else (10, 0),
-            pady=(18, 0),
+            padx=(0, 6) if column == 0 else (6, 0),
+            pady=(12, 0),
         )
         field.grid_columnconfigure(0, weight=1)
 
@@ -187,16 +189,16 @@ class GitHubScraperApp:
         ctk.CTkLabel(
             field,
             text=title,
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
             text_color="#24374a",
-        ).grid(row=0, column=0, sticky="w", pady=(0, 8))
+        ).grid(row=0, column=0, sticky="w", pady=(0, 4))
 
         entry = ctk.CTkEntry(
             field,
             textvariable=variable,
             show="*" if masked else "",
-            height=42,
-            corner_radius=14,
+            height=34,
+            corner_radius=10,
             fg_color="#f8fbfe",
             border_color="#d7e1ec",
             text_color="#13273a",
@@ -205,48 +207,82 @@ class GitHubScraperApp:
 
     def _build_contact_mode(self, parent: ctk.CTkFrame, row: int) -> None:
         block = ctk.CTkFrame(parent, fg_color="transparent")
-        block.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(22, 0))
+        block.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(14, 0))
         block.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(
             block,
             text="Valid Contact Type",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=ctk.CTkFont(size=14, weight="bold"),
             text_color="#223548",
-        ).grid(row=0, column=0, sticky="w", pady=(0, 10))
+        ).grid(row=0, column=0, sticky="w", pady=(0, 6))
 
         self.contact_segment = ctk.CTkSegmentedButton(
             block,
             values=["email", "linkedin", "discord", "both"],
             variable=self.contact_mode_var,
-            height=40,
-            corner_radius=14,
+            height=32,
+            corner_radius=10,
             fg_color="#e8eef7",
             selected_color="#2f6fed",
             selected_hover_color="#245ed5",
             unselected_color="#e8eef7",
             unselected_hover_color="#dce6f4",
             text_color="#1f3555",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
         )
         self.contact_segment.grid(row=1, column=0, sticky="ew")
         self.contact_segment.set("both")
 
+    def _build_gender_filter(self, parent: ctk.CTkFrame, row: int) -> None:
+        block = ctk.CTkFrame(parent, fg_color="transparent")
+        block.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(14, 0))
+        block.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkLabel(
+            block,
+            text="Gender",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color="#223548",
+        ).grid(row=0, column=0, sticky="w", pady=(0, 6))
+
+        options = ctk.CTkFrame(block, fg_color="transparent")
+        options.grid(row=1, column=0, sticky="w")
+
+        for index, (value, label) in enumerate(
+            (("all", "All"), ("male", "Male"), ("female", "Female"))
+        ):
+            ctk.CTkRadioButton(
+                options,
+                text=label,
+                value=value,
+                variable=self.gender_var,
+                radiobutton_width=18,
+                radiobutton_height=18,
+                border_width_unchecked=2,
+                border_width_checked=5,
+                fg_color="#2f6fed",
+                hover_color="#245ed5",
+                border_color="#b9c7d9",
+                text_color="#1f3555",
+                font=ctk.CTkFont(size=11, weight="bold"),
+            ).grid(row=0, column=index, sticky="w", padx=(0 if index == 0 else 18, 0))
+
     def _build_actions(self, parent: ctk.CTkFrame, row: int) -> None:
         actions = ctk.CTkFrame(parent, fg_color="transparent")
-        actions.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(24, 0))
+        actions.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(16, 0))
         actions.grid_columnconfigure(0, weight=1)
 
         self.start_button = ctk.CTkButton(
             actions,
             text="Export Matching Profiles",
             command=self._start_scrape,
-            height=42,
-            corner_radius=14,
+            height=34,
+            corner_radius=10,
             fg_color="#2f6fed",
             hover_color="#245ed5",
             text_color="#ffffff",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
         )
         self.start_button.grid(row=0, column=0, sticky="w")
 
@@ -254,76 +290,76 @@ class GitHubScraperApp:
             actions,
             text="Clear",
             command=self._clear_filters,
-            height=42,
-            corner_radius=14,
+            height=34,
+            corner_radius=10,
             fg_color="#eaf1fb",
             hover_color="#dce7f7",
             text_color="#2958ab",
-            font=ctk.CTkFont(size=12, weight="bold"),
-        ).grid(row=0, column=1, sticky="e", padx=(12, 0))
+            font=ctk.CTkFont(size=11, weight="bold"),
+        ).grid(row=0, column=1, sticky="e", padx=(8, 0))
 
     def _build_progress(self, parent: ctk.CTkFrame, row: int) -> None:
         card = ctk.CTkFrame(
             parent,
             fg_color="#f5f8fc",
-            corner_radius=18,
+            corner_radius=14,
             border_width=1,
             border_color="#dce5ef",
         )
-        card.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(20, 0))
+        card.grid(row=row, column=0, columnspan=2, sticky="ew", pady=(14, 0))
         card.grid_columnconfigure(0, weight=1)
 
         top = ctk.CTkFrame(card, fg_color="transparent")
-        top.grid(row=0, column=0, sticky="ew", padx=18, pady=(16, 0))
+        top.grid(row=0, column=0, sticky="ew", padx=14, pady=(12, 0))
         top.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(
             top,
             text="Progress",
-            font=ctk.CTkFont(size=13, weight="bold"),
+            font=ctk.CTkFont(size=12, weight="bold"),
             text_color="#203548",
         ).grid(row=0, column=0, sticky="w")
         ctk.CTkLabel(
             top,
             textvariable=self.progress_percent_var,
-            font=ctk.CTkFont(size=22, weight="bold"),
+            font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#18324f",
         ).grid(row=0, column=1, sticky="e")
 
         ctk.CTkLabel(
             card,
             textvariable=self.status_var,
-            font=ctk.CTkFont(size=11),
+            font=ctk.CTkFont(size=10),
             text_color="#6b8198",
-        ).grid(row=1, column=0, sticky="w", padx=18, pady=(6, 12))
+        ).grid(row=1, column=0, sticky="w", padx=14, pady=(4, 8))
 
         self.progress = ctk.CTkProgressBar(
             card,
-            height=12,
+            height=10,
             corner_radius=999,
             fg_color="#dce7f4",
             progress_color="#2f6fed",
         )
-        self.progress.grid(row=2, column=0, sticky="ew", padx=18)
+        self.progress.grid(row=2, column=0, sticky="ew", padx=14)
         self.progress.set(0)
 
         ctk.CTkLabel(
             card,
             textvariable=self.progress_text_var,
-            font=ctk.CTkFont(size=11),
+            font=ctk.CTkFont(size=10),
             text_color="#6b8198",
-        ).grid(row=3, column=0, sticky="e", padx=18, pady=(8, 16))
+        ).grid(row=3, column=0, sticky="e", padx=14, pady=(6, 12))
 
     def _build_side_panel(self, parent: ctk.CTkFrame) -> None:
         panel = ctk.CTkFrame(parent, fg_color="transparent", width=SIDE_PANEL_WIDTH)
-        panel.grid(row=1, column=1, sticky="nsew", padx=(12, 24), pady=(0, 24))
+        panel.grid(row=1, column=1, sticky="nsew", padx=(8, 16), pady=(0, 16))
         panel.grid_columnconfigure(0, weight=1, minsize=SIDE_PANEL_WIDTH)
         panel.grid_propagate(False)
 
         ctk.CTkLabel(
             panel,
             text="Output",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=ctk.CTkFont(size=14, weight="bold"),
             text_color="#223548",
         ).grid(row=0, column=0, sticky="w")
 
@@ -331,52 +367,52 @@ class GitHubScraperApp:
             panel,
             fg_color="#f5f8fc",
             width=SIDE_PANEL_WIDTH,
-            corner_radius=18,
+            corner_radius=14,
             border_width=1,
             border_color="#dce5ef",
         )
-        destination_card.grid(row=1, column=0, sticky="ew", pady=(12, 0))
+        destination_card.grid(row=1, column=0, sticky="ew", pady=(8, 0))
         destination_card.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(
             destination_card,
             text="Save Location",
-            font=ctk.CTkFont(size=13, weight="bold"),
+            font=ctk.CTkFont(size=12, weight="bold"),
             text_color="#223548",
-        ).grid(row=0, column=0, sticky="w", padx=16, pady=(16, 10))
+        ).grid(row=0, column=0, sticky="w", padx=12, pady=(12, 6))
 
         self.destination_segment = ctk.CTkSegmentedButton(
             destination_card,
             values=[DESTINATION_LOCAL, DESTINATION_GOOGLE_SHEET],
             variable=self.destination_var,
             command=lambda _value: self._refresh_destination_ui(),
-            height=38,
-            corner_radius=14,
+            height=32,
+            corner_radius=10,
             fg_color="#e8eef7",
             selected_color="#2f6fed",
             selected_hover_color="#245ed5",
             unselected_color="#e8eef7",
             unselected_hover_color="#dce6f4",
             text_color="#1f3555",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
         )
-        self.destination_segment.grid(row=1, column=0, sticky="ew", padx=16)
+        self.destination_segment.grid(row=1, column=0, sticky="ew", padx=12)
 
         self.local_settings_frame = ctk.CTkFrame(destination_card, fg_color="transparent")
-        self.local_settings_frame.grid(row=2, column=0, sticky="ew", padx=16, pady=(14, 0))
+        self.local_settings_frame.grid(row=2, column=0, sticky="ew", padx=12, pady=(10, 12))
         self.local_settings_frame.grid_columnconfigure(0, weight=1)
         self.local_settings_frame.grid_columnconfigure(1, weight=0)
         ctk.CTkLabel(
             self.local_settings_frame,
             text="CSV File",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
             text_color="#24374a",
-        ).grid(row=0, column=0, sticky="w", pady=(0, 8))
+        ).grid(row=0, column=0, sticky="w", pady=(0, 4))
         ctk.CTkEntry(
             self.local_settings_frame,
             textvariable=self.local_result_var,
-            height=42,
-            corner_radius=14,
+            height=34,
+            corner_radius=10,
             fg_color="#ffffff",
             border_color="#d7e1ec",
             text_color="#13273a",
@@ -385,32 +421,32 @@ class GitHubScraperApp:
             self.local_settings_frame,
             text="Browse",
             command=self._browse_local_file,
-            width=92,
-            height=38,
-            corner_radius=14,
+            width=80,
+            height=32,
+            corner_radius=10,
             fg_color="#eaf1fb",
             hover_color="#dce7f7",
             text_color="#2958ab",
-            font=ctk.CTkFont(size=12, weight="bold"),
-        ).grid(row=1, column=1, padx=(10, 0))
+            font=ctk.CTkFont(size=11, weight="bold"),
+        ).grid(row=1, column=1, padx=(8, 0))
 
         self.sheet_settings_frame = ctk.CTkFrame(destination_card, fg_color="transparent")
-        self.sheet_settings_frame.grid(row=3, column=0, sticky="ew", padx=16, pady=(14, 0))
+        self.sheet_settings_frame.grid(row=3, column=0, sticky="ew", padx=12, pady=(10, 12))
         self.sheet_settings_frame.grid_columnconfigure(0, weight=1)
         self.sheet_settings_frame.grid_columnconfigure(1, weight=0)
         ctk.CTkLabel(
             self.sheet_settings_frame,
             text="Spreadsheet URL or ID",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
             text_color="#24374a",
-            wraplength=SIDE_PANEL_WIDTH - 56,
+            wraplength=SIDE_PANEL_WIDTH - 48,
             justify="left",
-        ).grid(row=0, column=0, sticky="w", pady=(0, 8))
+        ).grid(row=0, column=0, sticky="w", pady=(0, 4))
         ctk.CTkEntry(
             self.sheet_settings_frame,
             textvariable=self.google_sheet_var,
-            height=42,
-            corner_radius=14,
+            height=34,
+            corner_radius=10,
             fg_color="#ffffff",
             border_color="#d7e1ec",
             text_color="#13273a",
@@ -418,14 +454,14 @@ class GitHubScraperApp:
         ctk.CTkLabel(
             self.sheet_settings_frame,
             text="Worksheet Name",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
             text_color="#24374a",
-        ).grid(row=2, column=0, sticky="w", pady=(14, 8))
+        ).grid(row=2, column=0, sticky="w", pady=(10, 4))
         ctk.CTkEntry(
             self.sheet_settings_frame,
             textvariable=self.google_sheet_tab_var,
-            height=42,
-            corner_radius=14,
+            height=34,
+            corner_radius=10,
             fg_color="#ffffff",
             border_color="#d7e1ec",
             text_color="#13273a",
@@ -433,16 +469,16 @@ class GitHubScraperApp:
         ctk.CTkLabel(
             self.sheet_settings_frame,
             text="Apps Script Web App URL",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
             text_color="#24374a",
-            wraplength=SIDE_PANEL_WIDTH - 56,
+            wraplength=SIDE_PANEL_WIDTH - 48,
             justify="left",
-        ).grid(row=4, column=0, sticky="w", pady=(14, 8))
+        ).grid(row=4, column=0, sticky="w", pady=(10, 4))
         ctk.CTkEntry(
             self.sheet_settings_frame,
             textvariable=self.google_apps_script_var,
-            height=42,
-            corner_radius=14,
+            height=34,
+            corner_radius=10,
             fg_color="#ffffff",
             border_color="#d7e1ec",
             text_color="#13273a",
@@ -450,16 +486,16 @@ class GitHubScraperApp:
         ctk.CTkLabel(
             self.sheet_settings_frame,
             text="Service Account JSON (Optional Fallback)",
-            font=ctk.CTkFont(size=12, weight="bold"),
+            font=ctk.CTkFont(size=11, weight="bold"),
             text_color="#24374a",
-            wraplength=SIDE_PANEL_WIDTH - 56,
+            wraplength=SIDE_PANEL_WIDTH - 48,
             justify="left",
-        ).grid(row=6, column=0, sticky="w", pady=(14, 8))
+        ).grid(row=6, column=0, sticky="w", pady=(10, 4))
         ctk.CTkEntry(
             self.sheet_settings_frame,
             textvariable=self.google_credentials_var,
-            height=42,
-            corner_radius=14,
+            height=34,
+            corner_radius=10,
             fg_color="#ffffff",
             border_color="#d7e1ec",
             text_color="#13273a",
@@ -468,38 +504,38 @@ class GitHubScraperApp:
             self.sheet_settings_frame,
             text="Browse",
             command=self._browse_credentials_file,
-            width=92,
-            height=38,
-            corner_radius=14,
+            width=80,
+            height=32,
+            corner_radius=10,
             fg_color="#eaf1fb",
             hover_color="#dce7f7",
             text_color="#2958ab",
-            font=ctk.CTkFont(size=12, weight="bold"),
-        ).grid(row=7, column=1, padx=(10, 0))
+            font=ctk.CTkFont(size=11, weight="bold"),
+        ).grid(row=7, column=1, padx=(8, 0))
 
         result_card = ctk.CTkFrame(
             panel,
             fg_color="#f5f8fc",
             width=SIDE_PANEL_WIDTH,
-            corner_radius=18,
+            corner_radius=14,
             border_width=1,
             border_color="#dce5ef",
         )
-        result_card.grid(row=2, column=0, sticky="ew", pady=(14, 0))
+        result_card.grid(row=2, column=0, sticky="ew", pady=(10, 0))
         ctk.CTkLabel(
             result_card,
             textvariable=self.output_title_var,
-            font=ctk.CTkFont(size=17, weight="bold"),
+            font=ctk.CTkFont(size=14, weight="bold"),
             text_color="#18324f",
-        ).pack(anchor="w", padx=16, pady=(16, 0))
+        ).pack(anchor="w", padx=12, pady=(12, 0))
         ctk.CTkLabel(
             result_card,
             textvariable=self.result_var,
-            font=ctk.CTkFont(size=11),
+            font=ctk.CTkFont(size=10),
             text_color="#6b8198",
             justify="left",
-            wraplength=SIDE_PANEL_WIDTH - 68,
-        ).pack(anchor="w", padx=16, pady=(6, 16))
+            wraplength=SIDE_PANEL_WIDTH - 48,
+        ).pack(anchor="w", padx=12, pady=(4, 12))
 
     def _browse_local_file(self) -> None:
         file_path = filedialog.asksaveasfilename(
@@ -562,6 +598,7 @@ class GitHubScraperApp:
             variable.set("")
 
         self.contact_mode_var.set("both")
+        self.gender_var.set("all")
         self.status_var.set("Ready")
         self.progress_text_var.set("0 / 0")
         self.progress_percent_var.set("0%")
@@ -614,7 +651,13 @@ class GitHubScraperApp:
 
         worker = threading.Thread(
             target=self._scrape_worker,
-            args=(filters, export_settings, self.token_var.get().strip(), self.contact_mode_var.get()),
+            args=(
+                filters,
+                export_settings,
+                self.token_var.get().strip(),
+                self.contact_mode_var.get(),
+                self.gender_var.get(),
+            ),
             daemon=True,
         )
         worker.start()
@@ -625,10 +668,11 @@ class GitHubScraperApp:
         export_settings: ExportSettings,
         token: str,
         contact_mode: str,
+        gender: str,
     ) -> None:
         try:
             details = asyncio.run(scrape_users(filters, token, self._queue_progress))
-            exported_count = export_profiles(details, export_settings, contact_mode)
+            exported_count = export_profiles(details, export_settings, contact_mode, gender)
             self.root.after(0, lambda: self._handle_success(exported_count, export_settings))
         except Exception as exc:  # noqa: BLE001
             error_message = str(exc)
