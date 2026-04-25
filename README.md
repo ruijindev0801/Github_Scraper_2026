@@ -6,6 +6,7 @@ A desktop Tkinter app for searching public GitHub profiles by location and optio
 
 - Search GitHub users by required location
 - Narrow results with optional keyword, creation date, repository count, and follower count filters
+- Filter results by inferred gender (All / Male / Female) using the user's profile name
 - Export profile details to a local CSV file or a Google Sheet
 - Include email, LinkedIn, and Discord details when they are publicly available
 - Read each user's GitHub profile README and extract email, LinkedIn, or Discord details from there too
@@ -16,12 +17,13 @@ A desktop Tkinter app for searching public GitHub profiles by location and optio
 - Python 3.10+
 - `aiohttp`
 - `customtkinter`
+- `gender-guesser` for the gender filter
 - `google-api-python-client` and `google-auth` only if you want the service-account Google Sheets fallback
 
 ## Install
 
 ```bash
-pip install aiohttp customtkinter
+pip install aiohttp customtkinter gender-guesser
 ```
 
 For Google Sheets export, also install:
@@ -94,6 +96,7 @@ Both destinations use the same columns:
 - Duplicate usernames are skipped for both CSV and Google Sheets exports.
 - Profile README content is checked in addition to the GitHub bio and blog fields.
 - The Discord column is extracted from public bio/blog/README text when it matches common Discord URLs or usernames.
+- The gender filter infers gender from the user's profile name via `gender-guesser`. Profiles without a recognizable first name are skipped when `Male` or `Female` is selected; pick `All` to disable the filter.
 
 ## Project Structure
 
