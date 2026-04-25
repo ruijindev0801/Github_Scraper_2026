@@ -78,12 +78,61 @@ def _matches_contact_mode(email: str, linkedin: str, discord: str, contact_mode:
     return bool(email) or bool(linkedin) or bool(discord)
 
 
-def _build_export_rows(details: list[dict[str, Any]], contact_mode: str) -> list[list[str]]:
+_GENDER_DETECTOR: Any = None
+
+
+def _get_gender_detector() -> Any:
+    global _GENDER_DETECTOR
+    if _GENDER_DETECTOR is not None:
+        return _GENDER_DETECTOR
+
+    try:
+        from gender_guesser import detector as gender_detector
+    except ImportError as exc:
+        raise RuntimeError(
+            "Gender filtering requires the `gender-guesser` package. "
+            "Install it with `pip install gender-guesser`."
+        ) from exc
+
+    _GENDER_DETECTOR = gender_detector.Detector(case_sensitive=False)
+    return _GENDER_DETECTOR
+
+
+def _infer_gender(name: str | None) -> str:
+    if not name:
+        return "unknown"
+
+    first_name = name.strip().split()[0] if name.strip() else ""
+    if not first_name:
+        return "unknown"
+
+    guess = _get_gender_detector().get_gender(first_name)
+    if guess in ("male", "mostly_male"):
+        return "male"
+    if guess in ("female", "mostly_female"):
+        return "female"
+    return "unknown"
+
+
+def _matches_gender(name: str | None, gender_filter: str) -> bool:
+    if gender_filter == "all":
+        return True
+    return _infer_gender(name) == gender_filter
+
+
+def _build_export_rows(
+    details: list[dict[str, Any]],
+    contact_mode: str,
+    gender_filter: str = "all",
+) -> list[list[str]]:
     rows: list[list[str]] = []
 
     for detail in details:
         username = str(detail.get("login") or "").strip()
         if not username:
+            continue
+
+        if not _matches_gender(detail.get("name"), gender_filter):
             continue
 
         readme_content = str(detail.get("readme_content") or "").strip()
@@ -344,8 +393,13 @@ def _export_profiles_to_google_sheet(rows: list[list[str]], settings: ExportSett
     return len(rows_to_append)
 
 
-def export_profiles(details: list[dict[str, Any]], settings: ExportSettings, contact_mode: str) -> int:
-    rows = _build_export_rows(details, contact_mode)
+def export_profiles(
+    details: list[dict[str, Any]],
+    settings: ExportSettings,
+    contact_mode: str,
+    gender_filter: str = "all",
+) -> int:
+    rows = _build_export_rows(details, contact_mode, gender_filter)
     if settings.destination == DESTINATION_GOOGLE_SHEET:
         return _export_profiles_to_google_sheet(rows, settings)
     return _export_profiles_to_csv(rows, settings.local_path)
