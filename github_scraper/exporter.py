@@ -78,46 +78,34 @@ def _matches_contact_mode(email: str, linkedin: str, discord: str, contact_mode:
     return bool(email) or bool(linkedin) or bool(discord)
 
 
-_GENDER_DETECTOR: Any = None
+MALE_PRONOUN_PATTERN = re.compile(
+    r"\b(?:he\s*/\s*(?:him|they)|him\s*/\s*his)\b",
+    re.IGNORECASE,
+)
+FEMALE_PRONOUN_PATTERN = re.compile(
+    r"\b(?:she\s*/\s*(?:her|they)|her\s*/\s*hers?)\b",
+    re.IGNORECASE,
+)
 
 
-def _get_gender_detector() -> Any:
-    global _GENDER_DETECTOR
-    if _GENDER_DETECTOR is not None:
-        return _GENDER_DETECTOR
-
-    try:
-        from gender_guesser import detector as gender_detector
-    except ImportError as exc:
-        raise RuntimeError(
-            "Gender filtering requires the `gender-guesser` package. "
-            "Install it with `pip install gender-guesser`."
-        ) from exc
-
-    _GENDER_DETECTOR = gender_detector.Detector(case_sensitive=False)
-    return _GENDER_DETECTOR
-
-
-def _infer_gender(name: str | None) -> str:
-    if not name:
-        return "unknown"
-
-    first_name = name.strip().split()[0] if name.strip() else ""
-    if not first_name:
-        return "unknown"
-
-    guess = _get_gender_detector().get_gender(first_name)
-    if guess in ("male", "mostly_male"):
-        return "male"
-    if guess in ("female", "mostly_female"):
-        return "female"
+def _infer_gender_from_pronouns(*texts: str | None) -> str:
+    for text in texts:
+        if not text:
+            continue
+        if MALE_PRONOUN_PATTERN.search(text):
+            return "male"
+        if FEMALE_PRONOUN_PATTERN.search(text):
+            return "female"
     return "unknown"
 
 
-def _matches_gender(name: str | None, gender_filter: str) -> bool:
+def _matches_gender(detail: dict[str, Any], gender_filter: str) -> bool:
     if gender_filter == "all":
         return True
-    return _infer_gender(name) == gender_filter
+    return _infer_gender_from_pronouns(
+        detail.get("bio"),
+        detail.get("readme_content"),
+    ) == gender_filter
 
 
 def _build_export_rows(
@@ -132,7 +120,7 @@ def _build_export_rows(
         if not username:
             continue
 
-        if not _matches_gender(detail.get("name"), gender_filter):
+        if not _matches_gender(detail, gender_filter):
             continue
 
         readme_content = str(detail.get("readme_content") or "").strip()
