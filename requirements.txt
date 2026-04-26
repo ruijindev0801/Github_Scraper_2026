@@ -1,6 +1,5 @@
 aiohttp
 customtkinter
-gender-guesser
 
 # Optional: install these too if you want Google Sheets service-account export support.
 google-api-python-client
