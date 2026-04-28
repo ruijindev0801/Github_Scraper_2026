@@ -6,6 +6,7 @@ A desktop Tkinter app for searching public GitHub profiles by location and optio
 
 - Search GitHub users by required location
 - Narrow results with optional keyword, creation date, repository count, and follower count filters
+- Filter results by gender (All / Male / Female) detected from explicit `he/him` or `she/her` pronouns in the user's bio or profile README
 - Export profile details to a local CSV file or a Google Sheet
 - Include email, LinkedIn, and Discord details when they are publicly available
 - Read each user's GitHub profile README and extract email, LinkedIn, or Discord details from there too
@@ -94,6 +95,7 @@ Both destinations use the same columns:
 - Duplicate usernames are skipped for both CSV and Google Sheets exports.
 - Profile README content is checked in addition to the GitHub bio and blog fields.
 - The Discord column is extracted from public bio/blog/README text when it matches common Discord URLs or usernames.
+- The gender filter looks for explicit pronouns (`he/him`, `he/they`, `she/her`, `she/they`, `him/his`, `her/hers`) in the bio and profile README. Profiles with no detected pronoun are skipped when `Male` or `Female` is selected; pick `All` to disable the filter.
 
 ## Project Structure
 
