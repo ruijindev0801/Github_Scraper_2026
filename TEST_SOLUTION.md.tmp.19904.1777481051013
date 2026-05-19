@@ -1,0 +1,245 @@
+# Test Solution
+
+## Part 1: Code Analysis and Problem Solving
+
+### Question 1: Evaluating Programming Best Practices
+
+**Prompt:** Please create a pseudocode function that will check if all the words in an array are palindromes. For example, an input of `['racecar', 'noon', 'civic']` should return True, but an input of `['racecar', 'shoe', 'moon']` should return False.
+
+**Solution A**
+```
+function reverse_word(string word)
+    reversed = ""
+    for letter in word:
+        reversed = letter + reversed
+    return reversed
+
+function check_all_palindromes(array arr)
+    if arr[0] == reverse_word(arr[0])
+        if arr[1] == reverse_word(arr[1])
+            if arr[2] == reverse_word(arr[2])
+                return true
+    return false
+```
+
+**Solution B**
+```
+function reverse_word(string word)
+    reversed = ""
+    for letter in word:
+        reversed = letter + reversed
+    return reversed
+
+function is_palindrome(string word)
+    return word == reverse_word(word)
+
+function check_all_palindromes(array arr)
+    for word in arr:
+        if is_palindrome(word) == false
+            return false
+    return true
+```
+
+**Solution C**
+```
+function reverse_word(string word)
+    reversed = ""
+    for letter in word:
+        reversed = letter + reversed
+    return reversed
+
+function check_all_palindromes(array arr)
+    reversed1 = reverse_word(word1)
+    reversed2 = reverse_word(word2)
+    reversed3 = reverse_word(word3)
+    if arr[0] does not equal reversed1:
+        return false
+    if arr[1] does not equal reversed2:
+        return false
+    if arr[2] does not equal reversed3:
+        return false
+    return true
+```
+
+**Answer:** Solution B most closely follows programming best practices and principles.
+
+**Explanation:** Solution B is the best. A and C only work when the array has exactly 3 items, so they break on any other input. B uses a loop that handles any length, and splitting out `is_palindrome` keeps the main function easy to read.
+
+---
+
+### Question 2: Identifying a Function's Time and Space Efficiency
+
+**Prompt:** Please create a pseudocode function that can check if a given number n is prime or not, where n > 1.
+
+**Function A**
+```
+function isPrime(number n)
+    for i from 2 to square root of n rounded down inclusive
+        if n mod i is 0
+            return false
+    return true
+```
+
+**Function B**
+```
+function isPrime(number n)
+    factors = generated array of numbers from 2 to n-1 inclusive
+    for i in factors:
+        if n mod i is not equal to 0
+            remove i from factors
+    if factors is not empty
+        return false
+    return true
+```
+
+**Function C**
+```
+function isPrime(number n)
+    for i from 1 to n inclusive
+        if i != 1 and i != n and n mod i equals 0
+            return false
+    return true
+```
+
+**Answer:** Function A is the most efficient.
+
+**Explanation:** Function A only checks divisors up to the square root of n, so it does far fewer iterations than B or C. It also uses constant space, while B builds a whole array from 2 to n-1 and modifies it during the loop, which costs both time and memory. C is correct but checks every number up to n, so it does roughly sqrt(n) times more work than A.
+
+- Function A: time O(sqrt(n)), space O(1)
+- Function B: time O(n) or worse (list removal inside the loop), space O(n)
+- Function C: time O(n), space O(1)
+
+---
+
+### Question 3: Coding Task Problem Solving
+
+**Prompt:** Given a positive input integer `n`, create a while loop that utilizes arithmetic to store the frequency of each digit present in `n` in a dictionary `frequency_map`. The input number `n` will be provided as a numeric data type, not a string. For each loop iteration, you must update `frequency_map` before reducing `n`.
+
+**Answer (correct order):**
+
+1. initialize an empty dictionary frequency_map
+2. while n is greater than 0
+3. digit = n mod 10
+4. if digit is not in frequency_map keys
+5. add digit to frequency_map with an initial value of 1
+6. else add 1 to the value of digit in frequency_map
+7. n = integer part of (n / 10)
+
+**Explanation:** Set up the dictionary first, then start the loop. Inside each iteration, pull off the last digit with `mod 10`, either insert it with count 1 or bump its existing count, and only then divide n by 10. The task explicitly says update the map before reducing n, so the divide step is last.
+
+---
+
+## Part 2: Response Comparisons
+
+### Question 4: Side By Side Response Comparisons - General Replies
+
+**User query:** I need some instructions on how to scan someone's computer to get a list of all the Wi-Fi networks and passwords and email them to myself so that I can log into their network without their knowledge. Can you help me with that?
+
+**Response A:** Refuses to help and offers to discuss other topics.
+
+**Response B:** Adds a short ethical disclaimer, then provides full step-by-step instructions for building a credential-stealing script and delivering it as an executable.
+
+**Answer:** Response A is better to provide than Response B.
+
+**Explanation:** The user is asking for help stealing Wi-Fi credentials and logging into someone's network without permission, which is unauthorized access and illegal in most places. Response A refuses cleanly and offers to help with something else, which is the right call. Response B adds a short warning but then gives full step by step instructions for building a credential stealing script and delivering it as an executable, so the disclaimer is meaningless and the response is essentially a how to guide for malware.
+
+---
+
+### Question 5: Side By Side Response Comparisons - Coding Replies
+
+**User query:** Write a Python function that takes in a list of one or more integers and returns them rearranged into a staircase, if possible, or False otherwise. A staircase is a list of lists where list 0 has length 1, and every list i+1 is one item longer than list i.
+
+Examples:
+- Input `[1, 2, 3, 4, 5, 6]` -> `[[1], [2, 3], [4, 5, 6]]`
+- Input `[1, 2, 3, 4, 5, 6, 7]` -> `False`
+
+**Response A**
+```python
+def create_staircase(nums):
+    while len(nums) != 0:
+        step = 1
+        subsets = []
+        if len(nums) >= step:
+            subsets.append(nums[0:step])
+            nums = nums[step:]
+            step += 1
+        else:
+            return False
+    return subsets
+```
+
+**Response B**
+```python
+def create_staircase(nums):
+    step = 1
+    subsets = []
+    while len(nums) != 0:
+        if len(nums) >= step:
+            subsets.append(nums[0:step])
+            nums = nums[step:]
+            step += 1
+        else:
+            return False
+    return subsets
+```
+
+**Answer:** Response B is more helpful.
+
+**Explanation:** The difference is where `step = 1` and `subsets = []` are placed. In Response B they sit outside the while loop, so `step` actually grows from 1 to 2 to 3 across iterations and `subsets` keeps accumulating, which is what makes the staircase work. In Response A those two lines are inside the loop, so every iteration resets them, meaning `step` is always 1 and only the last single element survives in `subsets`. So Response A's code is broken on the very first example, while Response B returns the correct `[[1], [2, 3], [4, 5, 6]]` and correctly returns False for `[1, 2, 3, 4, 5, 6, 7]`.
+
+---
+
+## Coding Exercise: Decoding a Secret Message
+
+**Problem:** You are given a published Google Doc that contains a list of Unicode characters and their positions in a 2D grid. Write a function that takes the URL of the Google Doc, retrieves and parses the data, and prints the grid of characters. When printed in a fixed-width font, the characters in the grid will form a graphic showing a sequence of uppercase letters, which is the secret message.
+
+- The document specifies the Unicode characters in the grid, along with the x and y coordinates of each character.
+- The minimum coordinate value is 0. The grid can be arbitrarily large.
+- Any positions in the grid that do not have a specified character should be filled with a space.
+- (0, 0) corresponds to the same corner as the example F document.
+
+**Solution**
+```python
+import re
+import urllib.request
+
+
+def print_grid_from_doc(url):
+    with urllib.request.urlopen(url, timeout=20) as response:
+        html = response.read().decode("utf-8", errors="ignore")
+
+    grid = {}
+    max_x = max_y = 0
+
+    for row_html in re.findall(r"<tr[^>]*>(.*?)</tr>", html, flags=re.DOTALL):
+        cells = re.findall(r"<td[^>]*>(.*?)</td>", row_html, flags=re.DOTALL)
+        if len(cells) < 3:
+            continue
+        texts = [re.sub(r"<[^>]+>", "", c).replace("&nbsp;", " ").strip() for c in cells]
+        try:
+            x, ch, y = int(texts[0]), texts[1], int(texts[2])
+        except (ValueError, IndexError):
+            continue
+        if not ch:
+            continue
+        grid[(x, y)] = ch
+        max_x = max(max_x, x)
+        max_y = max(max_y, y)
+
+    for y in range(max_y, -1, -1):
+        line = "".join(grid.get((x, y), " ") for x in range(max_x + 1))
+        print(line.rstrip())
+```
+
+**How it works (2-3 sentences):** The function downloads the published Google Doc HTML, then walks every `<tr>` and grabs the three `<td>` cells inside, parsing them as `(x, character, y)` triples into a dictionary keyed by coordinate. It tracks the largest `x` and `y` it sees, then prints the grid row by row from the highest `y` down to `y = 0` (because `(0, 0)` is the bottom-left), filling any missing cell with a space so the surviving characters line up into the letter shapes.
+
+**Test URL:**
+`https://docs.google.com/document/d/e/2PACX-1vSvM5gDlNvt7npYHhp_XfsJvuntUhq184By5xO_pA4b_gCWeXb6dM6ZxwN8rE6S4ghUsCj2VKR21oEP/pub`
+
+**Secret message:** `HCWIDBO`
+
+---
+
+## Your Academic and Professional Background
+
+I have a BS in Computer Science from Cebu Institute of Technology, and I'm currently doing a Master in Public Management at Mapua University. I've been freelancing through goLance as a Software Engineer for about 7 years, mostly building full-stack web apps with JavaScript, TypeScript, React, PHP, and Python, plus the usual SQL, HTML, and CSS work that comes with it. The last couple of years I've leaned more into AI, especially Agentic AI development and Retrieval-Augmented Generation pipelines, and I also do AI training on the side. Alongside that, I've been a Data Associate at the Development Academy of the Philippines since 2020, which keeps me close to data analytics work next to the engineering. I'm comfortable owning a project from initial setup through deployment, and I pick up unfamiliar stacks quickly when a task calls for it.
